@@ -1,7 +1,14 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+const bcrypt = require("bcrypt");
+
+
+
+
 
 async function main() {
+    const hashedPswd = await bcrypt.hash("ciao", 10); 
+    console.log(hashedPswd, "pswd");
 // creazione categorie di base
     const animali = await prisma.category.upsert({
         where: { type: 'Animali' },
@@ -65,7 +72,7 @@ async function main() {
             ]
         },
         role: 'superadmin',
-        password: 'ciao'
+        password: hashedPswd
         },
     })
 
