@@ -69,7 +69,7 @@ async function main() {
         },
     })
 
-    console.log({ Tilen , animali , viaggi , cibo})
+    console.log({ Tilen , animali , viaggi , cibo , })
 }
 main()
   .then(async () => {
