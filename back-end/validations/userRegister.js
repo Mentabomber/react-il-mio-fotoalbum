@@ -20,6 +20,21 @@ module.exports = {
       errorMessage: "Il nome deve essere lungo almeno 2 caratteri",
     },
   },
+  surname: {
+    in: ["body"],
+    notEmpty: {
+      options: {
+        ignore_whitespace: true,
+      },
+      errorMessage: "Il cognome è obbligatorio",
+    },
+    isLength: {
+      options: {
+        min: 2,
+      },
+      errorMessage: "Il cognome deve essere lungo almeno 2 caratteri",
+    },
+  },
   email: {
     in: ["body"],
     isEmail: {

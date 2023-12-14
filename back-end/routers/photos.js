@@ -5,9 +5,10 @@ const photosController = require("../controllers/photos");
 //middlewares
 const authHandlerMiddleware = require("../middlewares/authHandler");
 const userIdHandlerMiddleware = require("../middlewares/userIdHandler");
+const authRoleHandlerMiddleware = require("../middlewares/authRoleHandler");
 
 
-router.post("/", photosController.store);
+router.post("/", authHandlerMiddleware, authRoleHandlerMiddleware("superadmin"), photosController.store);
 
 router.get("/:id", photosController.show);
 

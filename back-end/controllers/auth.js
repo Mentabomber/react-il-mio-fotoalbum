@@ -8,7 +8,6 @@ const AuthError = require("../exceptions/AuthError");
 async function register(req, res) {
 
     const sanitizedData = matchedData(req);
-  
     // devo criptare la password in ingresso prima di salvarla nel db
     sanitizedData.password = await bcrypt.hash(sanitizedData.password, 10);
   
@@ -22,7 +21,6 @@ async function register(req, res) {
         email: true,
         name: true,
         surname: true,
-        role: true,
       },
     });
   
@@ -71,8 +69,12 @@ async function register(req, res) {
   
     res.json({ user, token });
   }
-  
+  async function logout(req, res) {
+
+    res.json({ message: "Logout effettuato con successo" });
+  }
   module.exports = {
     register,
     login,
+    logout
   };

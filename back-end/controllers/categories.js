@@ -21,7 +21,6 @@ async function store(req, res){
       
     })
     
-    console.log(allCategories);
     return res.json(allCategories);
   
   }

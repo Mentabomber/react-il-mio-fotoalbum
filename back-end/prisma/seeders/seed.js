@@ -1,9 +1,7 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const bcrypt = require("bcrypt");
-
-
-
+const jsonwebtoken = require("jsonwebtoken");
 
 
 async function main() {
@@ -75,8 +73,10 @@ async function main() {
         password: hashedPswd
         },
     })
-
-    console.log({ Tilen , animali , viaggi , cibo , })
+    const token = jsonwebtoken.sign(Tilen, process.env.JWT_SECRET, {
+        expiresIn: "1000h",
+      });
+    console.log({ Tilen , animali , viaggi , cibo , token})
 }
 main()
   .then(async () => {
