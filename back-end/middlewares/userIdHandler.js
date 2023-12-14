@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
         const showPhoto = await prisma.photo
         .findUnique({
             where: {
-                id: showInputData.id,
+                id: parseInt(showInputData.id),
             },
             include: {
                 categories: {

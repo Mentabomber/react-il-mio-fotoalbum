@@ -65,7 +65,7 @@ async function show(req, res){
     const showPhoto = await prisma.photo
     .findUnique({
         where: {
-            id: showInputData.id,
+            id: parseInt(showInputData.id),
         },
         include: {
             categories: {
@@ -74,7 +74,13 @@ async function show(req, res){
                     description: true
                 },
             },
-            user: true,
+            user: {
+                select: {
+                    email: true,
+                    name: true,
+                    surname: true
+                },
+            }
         }
 
     });
@@ -96,7 +102,13 @@ async function showAll(req, res){
                         description: true
                     },
                 },
-                user: true,
+                user: {
+                    select: {
+                        email: true,
+                        name: true,
+                        surname: true
+                    },
+                }
             }
         })
         
@@ -107,32 +119,43 @@ async function showAll(req, res){
 
 async function update(req, res){
 
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          // Multer ha generato un errore
+          return res.status(500).json(err);
+        } else if (err) {
+          // Errore sconosciuto
+          return res.status(500).json(err);
+        }
+    
+    const image = req.file; // Dati sull'immagine caricata
     const photoToUpdate = req.params;
     const dataToUpdate = req.body;
 
     const updatePhoto = await prisma.photo
     .update({
-        where: {
-          id: photoToUpdate.id,
-        },
-        data: {
-            title:dataToUpdate.title,
-            image:dataToUpdate.image,
-            description: dataToUpdate.description,
-            published:dataToUpdate.published,
-            categories:{
-                connect: creationData.categories.map((idCategory) => ({
-                id: idCategory,
-            }))
-            }
-        },
-    })
-    .then((updatedPhoto) => {
-    console.log("La foto è stata modificata:", updatedPhoto);
-    })
-    .catch((error) => console.error(error));
+            where: {
+            id: parseInt(photoToUpdate.id),
+            },
+            data: {
+                title:dataToUpdate.title,
+                image:image.path,
+                description: dataToUpdate.description,
+                published: Boolean(dataToUpdate.published),
+                categories:{
+                    connect: dataToUpdate.categories.map((idCategory) => ({
+                    id: parseInt(idCategory),
+                }))
+                }
+            },
+        })
+        .then((updatedPhoto) => {
+        console.log("La foto è stata modificata:", updatedPhoto);
+        })
+        .catch((error) => console.error(error));
 
-    return res.json(updatePhoto);
+        return res.json(updatePhoto);
+    });
 }
 
 async function destroy(req,res){
