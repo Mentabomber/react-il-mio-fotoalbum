@@ -1,61 +1,53 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const multer = require("multer");
-const fs = require("fs");
+const { validationResult } = require("express-validator");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const path = `storage/uploads/${req.user.name}/`;
-    fs.mkdirSync(path, { recursive: true }); // Creare la directory se non esiste
-    cb(null, path);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName); // Nome del file
-  },
-});
+async function store(req, res, next) {
+  const validation = validationResult(req);
+  const image = req.file; // Dati sull'immagine caricata
 
-const upload = multer({ storage: storage }).single("image");
+  // isEmpty si riferisce all'array degli errori di validazione.
+  // Se NON è vuoto, vuol dire che ci sono errori
+  if (!validation.isEmpty()) {
+    return next(
+      new ValidationError("Controllare i dati inseriti", validation.array())
+    );
+  }
+  const datiInIngresso = req.validatedData;
+  const user = req.user;
+  const query = {
+    title: datiInIngresso.title,
+    description: datiInIngresso.description,
+    published: datiInIngresso.published,
+    categories: datiInIngresso.categories,
+    image: image.path,
+  };
 
-async function store(req, res) {
-  upload(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // Multer ha generato un errore
-      return res.status(500).json(err);
-    } else if (err) {
-      // Errore sconosciuto
-      return res.status(500).json(err);
-    }
+  if (datiInIngresso.categories) {
+    query.categories = {
+      connect: datiInIngresso.categories.map((idCategories) => ({
+        id: parseInt(idCategories),
+      })),
+    };
+  }
 
-    const creationData = req.body;
-    const image = req.file; // Dati sull'immagine caricata
-    console.log(creationData, "creationData");
-    const newPhoto = await prisma.photo
-      .create({
-        data: {
-          title: creationData.title,
-          image: image.path,
-          description: creationData.description,
-          published: Boolean(creationData.published),
-          user: {
-            connect: {
-              id: parseInt(req.user.id),
-            },
-          },
-          categories: {
-            connect: creationData.categories.map((idCategory) => ({
-              id: parseInt(idCategory),
-            })),
-          },
-        },
-      })
-      .then((newPhoto) => {
-        console.log("Nuova foto aggiunta:", newPhoto);
-      })
-      .catch((error) => console.error(error));
+  if (user) {
+    query.user = {
+      connect: {
+        id: parseInt(user.id),
+      },
+    };
+  }
 
-    return res.json(newPhoto);
+  const newPhoto = await prisma.photo.create({
+    data: query,
+    include: {
+      categories: true,
+      user: true,
+    },
   });
+
+  return res.json(newPhoto);
 }
 
 async function show(req, res) {
@@ -106,7 +98,6 @@ async function showAll(req, res) {
     },
   });
 
-  console.log(showAllPhotos);
   return res.json(showAllPhotos);
 }
 

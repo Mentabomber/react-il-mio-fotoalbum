@@ -11,7 +11,6 @@ module.exports = (req, res, next) => {
   // leggere il Bearer Token dal header della richiesta
   // Stringa che inizia con Bearer seguita da uno spazio e poi il token
   const bearer = req.headers.authorization;
-
   // controllo il bearer
   if (!bearer || !bearer.startsWith("Bearer ")) {
     throw new AuthError("Bearer token mancante o malformato");
