@@ -103,57 +103,42 @@ async function showAll(req, res) {
 }
 
 async function update(req, res) {
+  const file = req.file;
+  const id = req.params.id;
+  const datiInIngresso = req.validatedData;
   try {
-    upload(req, res, async function (err) {
-      if (err instanceof multer.MulterError) {
-        // Multer ha generato un errore
-        return res.status(500).json(err);
-      } else if (err) {
-        // Errore sconosciuto
-        return res.status(500).json(err);
-      }
-
-      const image = req.file; // Dati sull'immagine caricata
-      const photoToUpdate = req.params;
-      const dataToUpdate = req.body;
-
-      const existingPhoto = await prisma.photo.findUnique({
-        where: {
-          id: parseInt(photoToUpdate.id),
-        },
-        select: {
-          image: true,
-        },
-      });
-
-      if (!existingPhoto) {
-        return res.status(404).send("Photo not found");
-      }
-
-      const existingImagePath = existingPhoto.image;
-
-      const updatePhoto = await prisma.photo.update({
-        where: {
-          id: parseInt(photoToUpdate.id),
-        },
-        data: {
-          title: dataToUpdate.title,
-          image: image.path,
-          description: dataToUpdate.description,
-          published: Boolean(dataToUpdate.published),
-          categories: {
-            connect: dataToUpdate.categories.map((idCategory) => ({
-              id: parseInt(idCategory),
-            })),
-          },
-        },
-      });
-      if (existingImagePath) {
-        fs.unlinkSync(existingImagePath);
-        console.log("Immagine precedente eliminata:", existingImagePath);
-      }
-      return res.json(updatePhoto);
+    if (file) {
+      datiInIngresso.image = file.filename;
+    }
+    const photo = await prisma.photo.findUnique({
+      where: {
+        id: parseInt(id),
+      },
     });
+    if (!photo) {
+      throw new Error("Not found");
+    }
+    const updatePhoto = await prisma.photo.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        title: datiInIngresso.title,
+        image: file.path,
+        description: datiInIngresso.description,
+        published: Boolean(datiInIngresso.published),
+        categories: {
+          connect: datiInIngresso.categories.map((idCategory) => ({
+            id: parseInt(idCategory),
+          })),
+        },
+      },
+    });
+    if (photo.image) {
+      fs.unlinkSync(photo.image);
+      console.log("Immagine precedente eliminata:", photo.image);
+    }
+    return res.json(updatePhoto);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error });
