@@ -7,16 +7,30 @@ const authHandlerMiddleware = require("../middlewares/authHandler");
 const userIdHandlerMiddleware = require("../middlewares/userIdHandler");
 const authRoleHandlerMiddleware = require("../middlewares/authRoleHandler");
 
-
-router.post("/", authHandlerMiddleware, authRoleHandlerMiddleware("superadmin"), photosController.store);
+router.post(
+  "/",
+  authHandlerMiddleware,
+  authRoleHandlerMiddleware("superadmin"),
+  photosController.store
+);
 
 router.get("/:id", photosController.show);
 
 router.get("/", photosController.showAll);
 
-router.put("/:id", authHandlerMiddleware, userIdHandlerMiddleware, photosController.update);
+router.put(
+  "/:id",
+  authHandlerMiddleware,
+  userIdHandlerMiddleware,
+  authRoleHandlerMiddleware("superadmin"),
+  photosController.update
+);
 
-router.delete("/:id", authHandlerMiddleware, userIdHandlerMiddleware, photosController.destroy);
-
+router.delete(
+  "/:id",
+  authHandlerMiddleware,
+  userIdHandlerMiddleware,
+  photosController.destroy
+);
 
 module.exports = router;
