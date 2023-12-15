@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { validationResult } = require("express-validator");
+const fs = require("fs");
 
 async function store(req, res, next) {
   const validation = validationResult(req);
@@ -161,12 +162,20 @@ async function update(req, res) {
 
 async function destroy(req, res) {
   const photoToDelete = req.params;
+  console.log(photoToDelete);
   try {
     const deletePhoto = await prisma.photo.delete({
       where: {
         id: parseInt(photoToDelete.id),
       },
+      select: {
+        image: true,
+      },
     });
+    if (deletePhoto.image) {
+      fs.unlinkSync(deletePhoto.image);
+      console.log("Immagine eliminata:", deletePhoto.image);
+    }
     return res.json(deletePhoto);
   } catch (error) {
     res.status(404).send("not found");
