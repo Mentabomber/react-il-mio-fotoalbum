@@ -173,7 +173,7 @@ async function destroy(req, res) {
   try {
     const deletePhoto = await prisma.photo.delete({
       where: {
-        id: photoToDelete.id,
+        id: parseInt(photoToDelete.id),
       },
     });
     return res.json(deletePhoto);

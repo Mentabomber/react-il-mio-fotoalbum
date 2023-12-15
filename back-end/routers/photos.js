@@ -30,6 +30,7 @@ router.delete(
   "/:id",
   authHandlerMiddleware,
   userIdHandlerMiddleware,
+  authRoleHandlerMiddleware("superadmin"),
   photosController.destroy
 );
 
