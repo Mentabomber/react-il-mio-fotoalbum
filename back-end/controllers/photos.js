@@ -80,26 +80,63 @@ async function show(req, res) {
   return res.json(showPhoto);
 }
 
-async function showAll(req, res) {
-  const showAllPhotos = await prisma.photo.findMany({
-    include: {
-      categories: {
-        select: {
-          type: true,
-          description: true,
-        },
-      },
-      user: {
-        select: {
-          email: true,
-          name: true,
-          surname: true,
-        },
-      },
-    },
-  });
+async function index(req, res) {
+  try {
+    const filters = req.query.filter;
+    const page = req.query.page || 1;
+    const perPage = 20;
 
-  return res.json(showAllPhotos);
+    const queryFilter = {};
+
+    if (filters && filters.includes("title eq")) {
+      const titleFilter = filters.split("title eq ")[1];
+      queryFilter.title = {
+        contains: titleFilter,
+      };
+    }
+
+    if (filters && filters.includes("description eq")) {
+      const descriptionFilter = filters.split("description eq ")[1];
+      queryFilter.description = {
+        contains: descriptionFilter,
+      };
+    }
+
+    if (filters && filters.includes("published eq")) {
+      const publishedFilter = filters.split("published eq ")[1];
+      queryFilter.published = {
+        equals: publishedFilter === "true" || publishedFilter === "1",
+      };
+    }
+
+    const total = await prisma.photo.count({ where: queryFilter });
+
+    const data = await prisma.photo.findMany({
+      skip: (page - 1) * perPage,
+      take: perPage,
+      where: queryFilter,
+      include: {
+        categories: {
+          select: {
+            type: true,
+            description: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            name: true,
+            surname: true,
+          },
+        },
+      },
+    });
+
+    res.json({ data, page, perPage, total });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 
 async function update(req, res) {
@@ -170,7 +207,7 @@ async function destroy(req, res) {
 module.exports = {
   store,
   show,
-  showAll,
+  index,
   update,
   destroy,
 };

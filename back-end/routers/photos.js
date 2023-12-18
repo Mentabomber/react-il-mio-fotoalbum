@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 router.post(
   "/",
   authHandlerMiddleware,
-  authRoleHandlerMiddleware("superadmin"),
+  authRoleHandlerMiddleware(["superadmin", "admin"]),
   multer({ storage: storage }).single("image"),
   checkSchema(photoInput),
   checkValidity,
@@ -39,13 +39,13 @@ router.post(
 
 router.get("/:id", photosController.show);
 
-router.get("/", photosController.showAll);
+router.get("/", photosController.index);
 
 router.put(
   "/:id",
   authHandlerMiddleware,
   userIdHandlerMiddleware,
-  authRoleHandlerMiddleware("superadmin"),
+  authRoleHandlerMiddleware(["superadmin", "admin"]),
   multer({ storage: storage }).single("image"),
   checkSchema(photoInput),
   checkValidity,
@@ -56,7 +56,7 @@ router.delete(
   "/:id",
   authHandlerMiddleware,
   userIdHandlerMiddleware,
-  authRoleHandlerMiddleware("superadmin"),
+  authRoleHandlerMiddleware(["superadmin", "admin"]),
   photosController.destroy
 );
 
