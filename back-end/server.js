@@ -20,6 +20,13 @@ const port = process.env.PORT || 3306;
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log("Request:", req.url);
+  next();
+});
+app.use(express.static("public"));
+app.use(express.static("storage"));
+
 app.use("/photos", photosRouter);
 
 app.use("/categories", categoriesRouter);
