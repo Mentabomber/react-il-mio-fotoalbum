@@ -21,7 +21,7 @@ async function store(req, res, next) {
     description: datiInIngresso.description,
     published: datiInIngresso.published,
     categories: datiInIngresso.categories,
-    image: image.path,
+    image: image.path.replace(/^storage\\/, ""),
   };
 
   if (datiInIngresso.categories) {

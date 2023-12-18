@@ -18,6 +18,7 @@ export default function Show() {
 
   async function fetchData() {
     setPhoto(await (await fetch("http://localhost:3307/photos/" + id)).json());
+    console.log(photo, "photo");
   }
   function getImgUrl() {
     if (!photo.image) {
@@ -30,13 +31,9 @@ export default function Show() {
 
     return "http://localhost:3307/" + photo.image;
   }
+
   useEffect(() => {
     fetchData();
-
-    // se non esiste il parametro "nome", reindirizzo l'utente alla homepage
-    // if (!searchParams.get("nome")) {
-    //   navigation("/");
-    // }
   }, []);
 
   return (
@@ -45,11 +42,14 @@ export default function Show() {
       <h1>
         Dettagli post #{id} - {photo?.title}
       </h1>
-      <p>{photo.description}</p>
+      <span>{photo.description}</span>
+      {/* categories */}
       <p className="text-gray-500 text-sm ">
         {photo.categories.length
           ? photo.categories.map((category) => (
-              <span className="px-2">{category.type}</span>
+              <span className="px-2" key={category.id}>
+                {category.type}
+              </span>
             ))
           : "Categorie non disponibili"}
       </p>
