@@ -9,6 +9,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import CreateNewPhoto from "./pages/CreateNewPhoto";
+import ShowOwnPhoto from "./pages/ShowOwnPhoto";
 import PrivateRoutes from "./middlewares/PrivateRoutes";
 import GuestRoutes from "./middlewares/GuestRoutes";
 import NotFound from "./pages/NotFound";
@@ -41,6 +43,8 @@ function App() {
               <Route path="/menu" element={<Menu />}></Route>
               <Route path="/contatti" element={<Contatti />}></Route>
               <Route path="/photos/:id" element={<PhotosShow />}></Route>
+              <Route path="show-posts" element={<ShowOwnPhoto />}></Route>
+              <Route path="new-post" element={<CreateNewPhoto />}></Route>
               <Route
                 path="/login"
                 element={

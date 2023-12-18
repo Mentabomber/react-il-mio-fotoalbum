@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import FabButton from "../components/FabButton";
-import { NewPhotoOverlay } from "../components/NewPhotoOverlay";
 import { PhotosList } from "../components/PhotosList";
 import TheFooter from "../components/TheFooter";
 import TheNavbar from "../components/TheNavbar";
@@ -35,12 +34,6 @@ export default function Home() {
       <FabButton onClick={() => setShowNewPhotoOverlay(true)}>
         <PlusIcon className="group-hover:rotate-180 group-hover:scale-125 duration-500"></PlusIcon>
       </FabButton>
-
-      <NewPhotoOverlay
-        show={showNewPhotoOverlay}
-        data={overlayData}
-        onClose={() => setShowNewPhotoOverlay(false)}
-      ></NewPhotoOverlay>
     </>
   );
 }

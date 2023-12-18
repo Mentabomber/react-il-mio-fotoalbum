@@ -108,7 +108,14 @@ async function index(req, res) {
         equals: publishedFilter === "true" || publishedFilter === "1",
       };
     }
-
+    //filtro per ricerca post tramite userId
+    const userId = req.query.userId;
+    if (userId) {
+      queryFilter.userId = {
+        equals: parseInt(userId),
+      };
+    }
+    console.log(userId, "userId", req.query.userId, "req-id");
     const total = await prisma.photo.count({ where: queryFilter });
 
     const data = await prisma.photo.findMany({

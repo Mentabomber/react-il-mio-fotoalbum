@@ -1,15 +1,16 @@
+import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
-import styles from "../css/modules/EditPhotoOverlay.module.css";
 
-const initialFormData = {
-  title: "asdasd",
-  description: "",
-  published: false,
-  image: "",
-  categories: [1, 2],
-};
+export default function CreateNewPhoto(show, onClose) {
+  const { user } = useAuth();
+  const initialFormData = {
+    title: "asdasd",
+    description: "",
+    published: false,
+    image: "",
+    categories: [1, 2],
+  };
 
-export function NewPhotoOverlay({ show, onClose }) {
   const inputClasses =
     "w-full border-2 border-gray-300 rounded-lg px-4 py-2 transition-colors focus:outline-none focus:border-primary";
   const [closing, setClosing] = useState(false);
@@ -84,13 +85,13 @@ export function NewPhotoOverlay({ show, onClose }) {
   if (!show) return null;
 
   return (
-    <div
-      className={
-        styles.newCategoryOverlay + (closing ? " " + styles.closing : "")
-      }
-      onClick={handleClose}
-    >
-      <div className={styles.panelOverlay} onClick={(e) => e.stopPropagation()}>
+    <>
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl">
+          Benvenuto {user?.name} {user?.surname}
+        </h1>
+      </div>
+      <div onClick={(e) => e.stopPropagation()}>
         <h1 className="text-2xl mb-12">Aggiungi un nuovo post!</h1>
 
         <form
@@ -177,6 +178,6 @@ export function NewPhotoOverlay({ show, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
