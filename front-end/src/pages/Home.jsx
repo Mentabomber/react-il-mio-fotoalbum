@@ -5,6 +5,7 @@ import { PhotosList } from "../components/PhotosList";
 import TheFooter from "../components/TheFooter";
 import TheNavbar from "../components/TheNavbar";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import GuestMessage from "../components/GuestMessage";
 
 export default function Home() {
   const [showNewPhotoOverlay, setShowNewPhotoOverlay] = useState(false);
@@ -30,7 +31,7 @@ export default function Home() {
   return (
     <>
       <PhotosList onEditPhoto={openEditOverlay}></PhotosList>
-
+      <GuestMessage></GuestMessage>
       <FabButton onClick={() => setShowNewPhotoOverlay(true)}>
         <PlusIcon className="group-hover:rotate-180 group-hover:scale-125 duration-500"></PlusIcon>
       </FabButton>

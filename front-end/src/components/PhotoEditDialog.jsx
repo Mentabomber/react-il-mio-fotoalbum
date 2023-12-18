@@ -36,22 +36,22 @@ export default function PhotoEditDialog({
     e.preventDefault();
     handleSubmit(internalData);
   }
-  function handleTagsChange(e) {
+  function handleCategoriesChange(e) {
     // recupero il valore del checkbox
     const value = e.target.value;
 
     // recupero lo stato della checkbox
     const checked = e.target.checked;
 
-    let tags = internalData?.tags || [];
+    let categories = internalData?.categories || [];
 
     if (checked) {
-      tags.push(value);
+      categories.push(value);
     } else {
-      tags = tags.filter((tag) => tag !== value);
+      categories = categories.filter((category) => category !== value);
     }
 
-    updateFormData(tags, "tags");
+    updateFormData(categories, "categories");
   }
   function handleClose() {
     setClosing(true);
@@ -139,36 +139,36 @@ export default function PhotoEditDialog({
               <label className="">
                 <input
                   type="checkbox"
-                  checked={internalData.tags.includes("1")}
+                  checked={internalData.categories.includes("1")}
                   value="1"
-                  onChange={handleTagsChange}
+                  onChange={handleCategoriesChange}
                 />{" "}
                 Viaggi
               </label>
               <label className="">
                 <input
                   type="checkbox"
-                  checked={internalData.tags.includes("2")}
+                  checked={internalData.categories.includes("2")}
                   value="2"
-                  onChange={handleTagsChange}
+                  onChange={handleCategoriesChange}
                 />{" "}
                 Cucina
               </label>
               <label className="">
                 <input
                   type="checkbox"
-                  checked={internalData.tags.includes("3")}
+                  checked={internalData.categories.includes("3")}
                   value="3"
-                  onChange={handleTagsChange}
+                  onChange={handleCategoriesChange}
                 />{" "}
                 Lavoro
               </label>
               <label className="">
                 <input
                   type="checkbox"
-                  checked={internalData.tags.includes("4")}
+                  checked={internalData.categories.includes("4")}
                   value="4"
-                  onChange={handleTagsChange}
+                  onChange={handleCategoriesChange}
                 />{" "}
                 Politica
               </label>

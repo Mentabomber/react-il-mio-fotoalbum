@@ -6,7 +6,7 @@ export function PhotosList() {
   const [photosList, setPhotosList] = useState([]);
 
   async function fetchData() {
-    const url = "http://localhost:3307/photos";
+    const url = "http://localhost:3307/photos/";
     const jsonData = await (await fetch(url)).json();
 
     setPhotosList(jsonData.data);
@@ -38,13 +38,15 @@ export function PhotosList() {
         <div className="container px-4 mx-auto">
           <h1 className="text-6xl text-center mb-8">Benvenuti!</h1>
 
-          {photosList.map((photo, index) => (
-            <PhotoSection
-              key={photo.id}
-              photo={photo}
-              reverse={index % 2 !== 0}
-            ></PhotoSection>
-          ))}
+          {photosList
+            .filter((photo) => photo.published === true) // Filtra solo le foto con published true
+            .map((photo, index) => (
+              <PhotoSection
+                key={photo.id}
+                photo={photo}
+                reverse={index % 2 !== 0}
+              ></PhotoSection>
+            ))}
         </div>
       </section>
     </>
@@ -91,7 +93,9 @@ function PhotoSection({ photo, reverse }) {
         <p className="text-gray-500 text-sm ">
           {photo.categories.length
             ? photo.categories.map((category) => (
-                <span className="px-2">{category.type}</span>
+                <span key={category.id} className="px-2">
+                  {category.type}
+                </span>
               ))
             : "Categorie non disponibili"}
         </p>

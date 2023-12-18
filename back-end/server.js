@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const photosRouter = require("./routers/photos");
 const categoriesRouter = require("./routers/categories");
 const authRouter = require("./routers/auth");
+const guestMessagesRouter = require("./routers/guestMessages");
 
 //middlewares
 const errorsHandlerMiddleware = require("./middlewares/errorsHandler");
@@ -32,6 +33,8 @@ app.use("/photos", photosRouter);
 app.use("/categories", categoriesRouter);
 
 app.use("", authRouter);
+
+app.use("/messages", guestMessagesRouter);
 
 app.use(errorsHandlerMiddleware);
 

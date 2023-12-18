@@ -31,7 +31,7 @@ export function NewPhotoOverlay({ show, onClose }) {
 
     let newValue = e.target.type === "checkbox" ? checked : value;
 
-    // controllo se sto assegnando il valore alla proprietà tags
+    // controllo se sto assegnando il valore alla proprietà categories
     // se si, devo gestire il valore come se fosse un array
     if (key === "categories") {
       let currentCategories = formData.categories;

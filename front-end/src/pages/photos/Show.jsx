@@ -7,9 +7,11 @@ import {
 } from "react-router-dom";
 
 export default function Show() {
+  let initiated = false;
   const { id } = useParams();
-
+  console.log(id);
   // Ottengo uno state con i query string presenti
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [photo, setPhoto] = useState({});
   const navigation = useNavigate();
@@ -17,8 +19,10 @@ export default function Show() {
   console.log(searchParams);
 
   async function fetchData() {
-    setPhoto(await (await fetch("http://localhost:3307/photos/" + id)).json());
-    console.log(photo, "photo");
+    const url = "http://localhost:3307/photos/";
+    const jsonData = await (await fetch(url + id)).json();
+    console.log(jsonData, "ciaone");
+    setPhoto(jsonData);
   }
   function getImgUrl() {
     if (!photo.image) {
@@ -33,7 +37,13 @@ export default function Show() {
   }
 
   useEffect(() => {
+    if (initiated) {
+      return;
+    }
+
     fetchData();
+
+    initiated = true;
   }, []);
 
   return (
@@ -44,10 +54,10 @@ export default function Show() {
       </h1>
       <span>{photo.description}</span>
       {/* categories */}
-      <p className="text-gray-500 text-sm ">
-        {photo.categories.length
+      <p className="text-gray-500 text-sm">
+        {photo.categories && photo.categories.length
           ? photo.categories.map((category) => (
-              <span className="px-2" key={category.id}>
+              <span key={category.id} className="px-2">
                 {category.type}
               </span>
             ))
