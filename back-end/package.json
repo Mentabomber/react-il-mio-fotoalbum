@@ -1,54 +1,25 @@
 {
-  
   "devDependencies": {
-  
-    
-  "prisma": "^5.7.0"
-  
+    "prisma": "^5.7.0"
   },
-  
   "dependencies": {
-  
-    
-  "@prisma/client": "^5.7.0",
-  
-    
-  "bcrypt": "^5.1.1",
-  
-    
-  "cors": "^2.8.5",
-  
-    
-  "dotenv": "^16.3.1",
-  
-    
-  "express": "^4.18.2",
-  
-    
-  "express-validator": "^7.0.1",
-  
-    
-  "jsonwebtoken": "^9.0.2",
-  
-    
-  "multer": "^1.4.5-lts.1",
-  
-    
-  "node": "^21.2.0",
-  
-    
-  "nodemon": "^3.0.2"
-  
+    "@prisma/client": "^5.7.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node": "^21.2.0",
+    "nodemon": "^3.0.2"
   },
-  
   "name": "react-il-mio-fotoalbum",
-  
   "version": "1.0.0",
-  
   "prisma": {
-  
-    
-  "seed": "node prisma/seeders/seed.js"
-  
+    "seed": "node prisma/seeders/seed.js"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
   }
 }
