@@ -67,11 +67,34 @@ async function login(req, res, next) {
 
   res.json({ user, token });
 }
+
+async function me(req, res, next) {
+  // Recuperare i dati inseriti dall'utente
+  const { email } = req.user;
+
+  // controllare che ci sia un utente con quella email
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    return next(new AuthError("Utente non trovato"));
+  }
+
+  // rimuovo la password dall'oggetto user
+  delete user.password;
+
+  res.json({ user });
+}
+
 async function logout(req, res) {
   res.json({ message: "Logout effettuato con successo" });
 }
 module.exports = {
   register,
   login,
+  me,
   logout,
 };

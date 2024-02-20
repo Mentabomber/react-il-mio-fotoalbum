@@ -18,11 +18,14 @@ export function CompanyProvider({ children }) {
     email: "info@just_post_it.it",
   });
 
-  const [menu, setMenu] = useState([
+  const [authMenu, setAuthMenu] = useState([
     {
       label: "Home",
       url: "/",
     },
+  ]);
+
+  const [menu, setMenu] = useState([
     {
       label: "Login",
       url: "/login",
@@ -39,7 +42,9 @@ export function CompanyProvider({ children }) {
   });
 
   return (
-    <CompanyContext.Provider value={{ company, contacts, menu, logo }}>
+    <CompanyContext.Provider
+      value={{ company, contacts, authMenu, menu, logo }}
+    >
       {children}
     </CompanyContext.Provider>
   );

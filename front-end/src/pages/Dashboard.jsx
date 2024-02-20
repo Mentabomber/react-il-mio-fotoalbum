@@ -14,7 +14,6 @@ function DashboardLink({ href, children }) {
 
 export default function Dashboard() {
   const { user } = useAuth();
-
   return (
     <>
       <div className="container mx-auto px-4">

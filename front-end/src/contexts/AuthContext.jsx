@@ -6,15 +6,17 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem("token") ?? null);
+  const [token, setToken] = useState(
+    () => localStorage.getItem("token") ?? null
+  );
   const [isLogged, setIsLogged] = useState(false);
   const [initComplete, setInitComplete] = useState(false);
   const navigate = useNavigate();
 
   /**
-   * Dopo che l'utente si è loggato, 
+   * Dopo che l'utente si è loggato,
    * devo salvare i suoi dati nella variabile user
-   * 
+   *
    * Devo anche salvare il JWT ricevuto dal server
    * @param {{token:string, user: {name:string, surname:string, email:string}}} resp
    */
@@ -50,7 +52,6 @@ export function AuthProvider({ children }) {
    */
   async function fetchLoggedUser() {
     const { user } = await fetchApi("/me");
-
     setUser(user);
     setIsLogged(true);
   }
@@ -74,9 +75,17 @@ export function AuthProvider({ children }) {
   console.log("render AuthContext");
 
   return (
-    <AuthContext.Provider value={{ user, isLogged, initComplete, handleLoginOrRegistration, handleLogout }} >
+    <AuthContext.Provider
+      value={{
+        user,
+        isLogged,
+        initComplete,
+        handleLoginOrRegistration,
+        handleLogout,
+      }}
+    >
       {children}
-    </ AuthContext.Provider>
+    </AuthContext.Provider>
   );
 }
 

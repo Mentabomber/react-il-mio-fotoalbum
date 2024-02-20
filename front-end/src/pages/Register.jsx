@@ -25,7 +25,7 @@ export default function Register() {
 
     // salvo i dati nel AuthContext
     handleLoginOrRegistration(resp);
-
+    console.log(formData + "info");
     navigate("/dashboard");
   }
 
