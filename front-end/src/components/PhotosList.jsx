@@ -79,7 +79,7 @@ function PhotoSection({ photo, reverse }) {
       <div
         className={
           "flex flex-col gap-6  w-2/3 " +
-          (reverse ? "pr-24 text-right" : "pl-24")
+          (reverse ? "pr-24 text-right items-end" : "pl-24")
         }
       >
         <h2 className="text-4xl font-semibold mb-4">{photo.title}</h2>
@@ -103,16 +103,10 @@ function PhotoSection({ photo, reverse }) {
         <div className="flex gap-4">
           <Link
             to={"/photos/" + photo.id}
-            className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors"
+            className=" bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors"
           >
             Visualizza
           </Link>
-          <button
-            className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors"
-            onClick={() => handleEditClick(photo.id)}
-          >
-            Modifica
-          </button>
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
     setIsLogged(false);
 
     // prima finisci di fare quello che stai facendo, come update stati e rendering,
-    // dopo eseugui la navigazione
+    // dopo esegui la navigazione
     setTimeout(() => {
       navigate("/");
     });
