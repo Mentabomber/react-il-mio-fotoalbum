@@ -188,7 +188,40 @@ async function update(req, res) {
     return res.status(500).json({ error: error });
   }
 }
+async function updatePublishedState(req, res) {
+  const id = req.params.id;
 
+  try {
+    let datiInIngresso = req.body.published;
+    if (datiInIngresso === "true") {
+      datiInIngresso = false;
+    } else {
+      datiInIngresso = true;
+    }
+    console.log(datiInIngresso, "datiiningresso");
+    const photo = await prisma.photo.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    if (!photo) {
+      throw new Error("Not found");
+    }
+    const updatePhotoPublished = await prisma.photo.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        published: datiInIngresso,
+      },
+    });
+    console.log(datiInIngresso, "dopo");
+    return res.json(updatePhotoPublished);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error });
+  }
+}
 async function destroy(req, res) {
   const photoToDelete = req.params;
   console.log(photoToDelete);
@@ -216,5 +249,6 @@ module.exports = {
   show,
   index,
   update,
+  updatePublishedState,
   destroy,
 };

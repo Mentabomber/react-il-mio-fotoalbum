@@ -32,12 +32,15 @@ module.exports = async (req, res, next) => {
   if (!showPhoto) {
     throw new Error("Not found");
   }
-
-  if (!(showPhoto.user.id === user.id)) {
-    throw new WrongUser(
-      "Non puoi cancellare questa foto perché non sei l'utente che la ha creata"
-    );
+  // if the user is a superadmin skip the other rules
+  if (user.role !== "superadmin") {
+    if (!(showPhoto.user.id === user.id)) {
+      throw new WrongUser(
+        "Non puoi cancellare questa foto perché non sei l'utente che la ha creata"
+      );
+    }
   }
+
   // Continue to the next middleware or route handler
   next();
 };

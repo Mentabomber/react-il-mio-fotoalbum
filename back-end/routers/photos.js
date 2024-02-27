@@ -52,6 +52,17 @@ router.put(
   photosController.update
 );
 
+router.put(
+  "/published/:id",
+  authHandlerMiddleware,
+  userIdHandlerMiddleware,
+  authRoleHandlerMiddleware(["superadmin", "admin"]),
+  multer({ storage: storage }).single("image"),
+  // checkSchema(photoInput),
+  checkValidity,
+  photosController.updatePublishedState
+);
+
 router.delete(
   "/:id",
   authHandlerMiddleware,

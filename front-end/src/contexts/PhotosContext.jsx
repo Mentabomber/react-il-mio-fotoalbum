@@ -5,7 +5,7 @@ import fetchApi from "../utils/fetchApi";
 const PhotosContext = createContext();
 
 // creazione di un elemento custom attorno al provider
-export function PhotosProvider({ children }) {
+export default function PhotosProvider({ children }) {
   const [photosList, setPhotosList] = useState([]);
 
   async function fetchData() {

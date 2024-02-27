@@ -1,11 +1,17 @@
-export default function TextInput({ name, label, placeholder, value, onValueChange, type = 'text' }) {
-
+export default function TextInput({
+  name,
+  label,
+  placeholder,
+  value,
+  onValueChange,
+  type = "text",
+}) {
   function handleInputChange(e) {
     let newValue = e.target.value;
 
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       newValue = e.target.checked;
-    } else if (type === 'file') {
+    } else if (type === "file") {
       newValue = e.target.files[0]; // Assume only one file is selected
     }
 
@@ -14,13 +20,15 @@ export default function TextInput({ name, label, placeholder, value, onValueChan
 
   return (
     <div>
-      <label htmlFor={name + '_input'} className="block font-bold mb-2">{label}</label>
+      <label htmlFor={name + "_input"} className="block font-bold mb-2">
+        {label}
+      </label>
 
-      {type === 'file' ? (
+      {type === "file" ? (
         <input
           type="file"
           name={name}
-          id={name + '_input'}
+          id={name + "_input"}
           className="border px-3 py-4 w-full"
           onChange={handleInputChange}
         />
@@ -29,11 +37,11 @@ export default function TextInput({ name, label, placeholder, value, onValueChan
           type={type}
           name={name}
           placeholder={placeholder}
-          id={name + '_input'}
+          id={name + "_input"}
           className="border px-3 py-4 w-full"
           {...{
-            value: type !== 'checkbox' ? value : undefined,
-            checked: type === 'checkbox' ? value : undefined,
+            value: type !== "checkbox" ? value : undefined,
+            checked: type === "checkbox" ? value : undefined,
           }}
           onChange={handleInputChange}
         />
