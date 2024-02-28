@@ -33,7 +33,7 @@ export default function Navbar() {
       <nav className="py-4">
         <div className="container px-4 mx-auto flex items-center justify-between">
           <div>
-            <img src={logo.url} alt={logo.alt} className="h-11" />
+            <img src={logo.urlLogoNav} alt={logo.alt} className="h-11" />
           </div>
 
           <div>

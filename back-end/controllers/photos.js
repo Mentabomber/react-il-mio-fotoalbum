@@ -15,6 +15,7 @@ async function store(req, res, next) {
     );
   }
   const datiInIngresso = req.validatedData;
+  console.log(datiInIngresso);
   const user = req.user;
   const query = {
     title: datiInIngresso.title,
@@ -26,8 +27,8 @@ async function store(req, res, next) {
 
   if (datiInIngresso.categories) {
     query.categories = {
-      connect: datiInIngresso.categories.map((idCategories) => ({
-        id: parseInt(idCategories),
+      connect: datiInIngresso.categories.split(",").map((idCategory) => ({
+        id: +idCategory,
       })),
     };
   }

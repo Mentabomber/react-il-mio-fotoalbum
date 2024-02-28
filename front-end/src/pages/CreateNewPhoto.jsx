@@ -1,30 +1,22 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
-
-export default function CreateNewPhoto(show, onClose) {
+import { useNavigate } from "react-router-dom";
+const initialFormData = {
+  title: "asdasd",
+  description: "",
+  published: false,
+  image: "",
+  categories: [],
+};
+export default function CreateNewPhoto(show) {
   const { user } = useAuth();
-  const initialFormData = {
-    title: "asdasd",
-    description: "",
-    published: false,
-    image: "",
-    categories: [1, 2],
-  };
+  const navigate = useNavigate();
 
   const inputClasses =
     "w-full border-2 border-gray-300 rounded-lg px-4 py-2 transition-colors focus:outline-none focus:border-primary";
-  const [closing, setClosing] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [categoriesList, setCategoriesList] = useState([]);
-
-  function handleClose() {
-    setClosing(true);
-
-    setTimeout(() => {
-      onClose();
-      setClosing(false);
-    }, 500);
-  }
+  const [error, setError] = useState("");
 
   function handleInputChange(e, key) {
     const value = e.target.value;
@@ -32,6 +24,10 @@ export default function CreateNewPhoto(show, onClose) {
 
     let newValue = e.target.type === "checkbox" ? checked : value;
 
+    if (e.target.type === "file") {
+      // prendo il primo file selezionato che è un istanza della classe File.
+      newValue = e.target.files[0];
+    }
     // controllo se sto assegnando il valore alla proprietà categories
     // se si, devo gestire il valore come se fosse un array
     if (key === "categories") {
@@ -47,7 +43,7 @@ export default function CreateNewPhoto(show, onClose) {
 
       newValue = currentCategories;
     }
-
+    console.log(newValue, "prima di essere mandata");
     setFormData((prev) => {
       return {
         ...prev,
@@ -66,21 +62,39 @@ export default function CreateNewPhoto(show, onClose) {
 
   async function handleFormSubmit(e) {
     e.preventDefault();
-    console.log(formData, "formdata");
-    const response = await fetch("http://localhost:3307/photos/", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const elToken = localStorage.getItem("token");
+    const formDataToSend = new FormData();
 
-    handleClose();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+    try {
+      const respone = await fetch("http://localhost:3307/photos/", {
+        method: "post",
+        headers: {
+          Authorization: "Bearer " + elToken,
+        },
+        body: formDataToSend,
+      });
+    } catch (error) {
+      setError(error.message);
+    }
+
+    // if (!response.ok) {
+    //   alert("Errore durante l'invio dei dati: " + (await response.text()));
+    // }
+    navigate("/dashboard");
   }
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  function getImagePreview() {
+    return typeof formData.image !== "string"
+      ? URL.createObjectURL(formData.image)
+      : formData.image;
+  }
 
   if (!show) return null;
 
@@ -92,6 +106,7 @@ export default function CreateNewPhoto(show, onClose) {
         </h1>
       </div>
       <div onClick={(e) => e.stopPropagation()}>
+        {error && <div className="p-6 text-white bg-red-600">{error}</div>}
         <h1 className="text-2xl mb-12">Aggiungi un nuovo post!</h1>
 
         <form
@@ -131,14 +146,23 @@ export default function CreateNewPhoto(show, onClose) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="image_input">Immagine</label>
+            <label htmlFor="image_input" className="mb-1 block">
+              Immagine
+            </label>
             <input
               type="file"
-              value={formData.image}
+              accept="image/*"
               onChange={(e) => handleInputChange(e, "image")}
               id="image_input"
               className={inputClasses}
             />
+            {getImagePreview() && (
+              <img
+                src={getImagePreview()}
+                alt=""
+                className="w-32 h-32 object-cover"
+              />
+            )}
           </div>
           <div className="mb-4">
             <label>Tags</label>
@@ -153,7 +177,7 @@ export default function CreateNewPhoto(show, onClose) {
                       onChange={(e) => handleInputChange(e, "categories")}
                       id="categories_input"
                     />
-                    {category.type}
+                    <span className="ml-1">{category.type}</span>
                   </label>
                 );
               })}
@@ -172,7 +196,7 @@ export default function CreateNewPhoto(show, onClose) {
           </button>
           <button
             className="w-full bg-gray-200 hover:bg-gray-400 px-8 py-4 rounded-lg text-gray-800 transition-colors"
-            onClick={handleClose}
+            onClick={() => navigate(-1)}
           >
             Annulla
           </button>

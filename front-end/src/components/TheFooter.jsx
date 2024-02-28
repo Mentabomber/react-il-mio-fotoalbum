@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useCompany } from "../contexts/CompanyContext";
 
 function FooterLink({ href, children }) {
   return (
@@ -12,13 +13,12 @@ function FooterLink({ href, children }) {
 }
 
 export default function TheFooter() {
+  const { logo } = useCompany();
   return (
     <footer className="bg-black pt-24 pb-12">
       <div className="container mx-auto px-4 pb-12 flex">
-        <div className="bg-white py-12 rounded-lg text-center w-1/3">
-          <img src="/logo.jpg" alt="" className="inline-block mb-4" />
-
-          <div className="italic text-base">Just Post It!</div>
+        <div className="bg-white py-2 rounded-lg text-center w-1/3">
+          <img src={logo.urlLogoFoot} alt="" className="inline-block mb-4" />
         </div>
 
         <div className="w-1/3 px-4 lg:px-10">

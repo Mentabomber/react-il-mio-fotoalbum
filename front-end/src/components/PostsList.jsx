@@ -106,10 +106,7 @@ export default function Post({ data }) {
             />
           </div>
 
-          <button
-            className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center"
-            onClick={() => handleEditClick(photo.id)}
-          >
+          <button className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center">
             Modifica
           </button>
         </div>

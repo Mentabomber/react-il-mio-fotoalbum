@@ -37,7 +37,8 @@ export function CompanyProvider({ children }) {
   ]);
 
   const [logo, setLogo] = useState({
-    url: "/logo.jpg",
+    urlLogoNav: "logo-small-borders.jpg",
+    urlLogoFoot: "logo-2.jpg",
     alt: "Logo Just Post It",
   });
 

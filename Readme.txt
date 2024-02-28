@@ -1,5 +1,8 @@
-Major issues / bugs / fixes
+to Add
 
+- superadmin tab where superadmin users can see all photos uploaded on the site wherever they are hidden or not and can turn them hidden if he wants to + can modify them add notes and also a log of all of the changes done to the post with infos on when the change was done and from whom  
+
+Major issues / bugs / fixes
 
 - When logged in on the home page fix the modify button
 
