@@ -36,8 +36,6 @@ export default function Post({ data }) {
     // Object.keys(formData).forEach((key) => {
     //   formDataToSend.append(key, formData[key]);
     // });
-
-    // const elToken = localStorage.getItem("token");
     await fetchApi("/photos/published/" + id, "PUT", formDataToSend);
   }
 

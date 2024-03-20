@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { handleInputChange } from "../utils/handleInputChange";
 import { useAuth } from "../contexts/AuthContext";
@@ -7,6 +7,7 @@ import { useCompany } from "../contexts/CompanyContext";
 import FormInput from "../components/inputs/Input";
 
 export default function Register() {
+  let initiated = false;
   const navigate = useNavigate();
   const { logo } = useCompany();
   const { handleLoginOrRegistration } = useAuth();
@@ -19,6 +20,25 @@ export default function Register() {
     password: "",
   });
   const [passwordMatching, setPasswordMatching] = useState({ password: "" });
+  const [emailList, setEmailList] = useState([]);
+
+  async function fetchData() {
+    const url = "http://localhost:3307/showEmails/";
+    const jsonData = await (await fetch(url)).json();
+
+    setEmailList(jsonData.data);
+    console.log(jsonData, "lista", emailList, "emailList");
+  }
+  // All'avvio dell'applicazione, fetchiamo i dati
+  useEffect(() => {
+    if (initiated) {
+      return;
+    }
+
+    fetchData();
+
+    initiated = true;
+  }, []);
   function validateForm() {
     let isValid = true;
     const newErrors = {};
@@ -40,6 +60,7 @@ export default function Register() {
       isValid = false;
     }
     // Validate email
+    console.log(formData.email, "email");
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const isValidEmail = emailRegex.test(formData.email);
     if (!formData.email) {
@@ -47,6 +68,9 @@ export default function Register() {
       isValid = false;
     } else if (!isValidEmail) {
       newErrors.email = "Email is not valid";
+      isValid = false;
+    } else if (emailList.some((value) => value.email === formData.email)) {
+      newErrors.email = "This Email is already in use";
       isValid = false;
     }
     // Validate password

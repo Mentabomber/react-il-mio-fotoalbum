@@ -1,6 +1,8 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import fetchApi from "../utils/fetchApi";
+
 const initialFormData = {
   title: "asdasd",
   description: "",
@@ -8,7 +10,9 @@ const initialFormData = {
   image: "",
   categories: [],
 };
-export default function CreateNewPhoto(show) {
+export default function CreateNewPhoto() {
+  //show
+  let initiated = false;
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -17,6 +21,25 @@ export default function CreateNewPhoto(show) {
   const [formData, setFormData] = useState(initialFormData);
   const [categoriesList, setCategoriesList] = useState([]);
   const [error, setError] = useState("");
+  const [emailList, setEmailList] = useState([]);
+
+  async function fetchData() {
+    const url = "http://localhost:3307/showEmails/";
+    const jsonData = await (await fetch(url)).json();
+
+    setEmailList(jsonData.data);
+    console.log(jsonData, "lista", emailList.data, "emailList");
+  }
+  // All'avvio dell'applicazione, fetchiamo i dati
+  useEffect(() => {
+    if (initiated) {
+      return;
+    }
+
+    fetchData();
+
+    initiated = true;
+  }, []);
 
   function handleInputChange(e, key) {
     const value = e.target.value;
@@ -62,27 +85,13 @@ export default function CreateNewPhoto(show) {
 
   async function handleFormSubmit(e) {
     e.preventDefault();
-    const elToken = localStorage.getItem("token");
-    const formDataToSend = new FormData();
 
+    const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       formDataToSend.append(key, formData[key]);
     });
-    try {
-      const respone = await fetch("http://localhost:3307/photos/", {
-        method: "post",
-        headers: {
-          Authorization: "Bearer " + elToken,
-        },
-        body: formDataToSend,
-      });
-    } catch (error) {
-      setError(error.message);
-    }
+    await fetchApi("/photos/", "POST", formDataToSend);
 
-    // if (!response.ok) {
-    //   alert("Errore durante l'invio dei dati: " + (await response.text()));
-    // }
     navigate("/dashboard");
   }
 
@@ -96,7 +105,7 @@ export default function CreateNewPhoto(show) {
       : formData.image;
   }
 
-  if (!show) return null;
+  // if (!show) return null;
 
   return (
     <>

@@ -92,9 +92,24 @@ async function me(req, res, next) {
 async function logout(req, res) {
   res.json({ message: "Logout effettuato con successo" });
 }
+async function showEmails(req, res) {
+  try {
+    const data = await prisma.user.findMany({
+      select: {
+        email: true,
+      },
+    });
+
+    res.json({ data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   register,
   login,
   me,
   logout,
+  showEmails,
 };

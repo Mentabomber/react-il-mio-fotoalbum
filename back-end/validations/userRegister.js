@@ -15,9 +15,9 @@ module.exports = {
     },
     isLength: {
       options: {
-        min: 2,
+        min: 3,
       },
-      errorMessage: "Il nome deve essere lungo almeno 2 caratteri",
+      errorMessage: "Il nome deve essere lungo almeno 3 caratteri",
     },
   },
   surname: {
@@ -30,9 +30,9 @@ module.exports = {
     },
     isLength: {
       options: {
-        min: 2,
+        min: 3,
       },
-      errorMessage: "Il cognome deve essere lungo almeno 2 caratteri",
+      errorMessage: "Il cognome deve essere lungo almeno 3 caratteri",
     },
   },
   email: {

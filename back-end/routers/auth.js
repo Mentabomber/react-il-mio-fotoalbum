@@ -25,5 +25,5 @@ router.post(
 );
 
 router.get("/me", authHandler, authController.me);
-
+router.get("/showEmails", authController.showEmails);
 module.exports = router;
