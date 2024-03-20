@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 export default function Input({
   label,
   type,
@@ -6,7 +8,7 @@ export default function Input({
   value,
   onChangeEffect,
 }) {
-  const { register } = useFormContext();
+  const { register } = useForm();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isRepeatPasswordVisible, setIsRepeatPasswordVisible] = useState(false);
 
@@ -23,7 +25,17 @@ export default function Input({
           <input
             className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             id={id}
-            type={type}
+            type={
+              type === "password"
+                ? id === "password"
+                  ? isPasswordVisible
+                    ? "text"
+                    : "password"
+                  : isRepeatPasswordVisible
+                  ? "text"
+                  : "password"
+                : type
+            }
             placeholder={placeholder}
             {...register(label, {
               required: {
@@ -31,15 +43,20 @@ export default function Input({
                 message: "required",
               },
             })}
-            value={value}
+            value={id === "repeat_password" ? null : value}
             onChange={onChangeEffect}
           />
           {type === "password" ? (
             <button
               className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600"
-              onClick={togglePasswordVisibility}
+              type="button"
+              onClick={
+                id === "password"
+                  ? togglePasswordVisibility
+                  : toggleRepeatPasswordVisibility
+              }
             >
-              {isPasswordVisible ? (
+              {isPasswordVisible || isRepeatPasswordVisible ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

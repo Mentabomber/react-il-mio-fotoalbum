@@ -193,7 +193,10 @@ async function updatePublishedState(req, res) {
   const id = req.params.id;
 
   try {
+    // let richiesta = req;
+    // console.log(richiesta, "richiesta");
     let datiInIngresso = req.body.published;
+    console.log(datiInIngresso);
     if (datiInIngresso === "true") {
       datiInIngresso = false;
     } else {

@@ -1,50 +1,109 @@
 import { useState } from "react";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handleInputChange } from "../utils/handleInputChange";
 import { useAuth } from "../contexts/AuthContext";
 import fetchApi from "../utils/fetchApi";
 import { useCompany } from "../contexts/CompanyContext";
+import FormInput from "../components/inputs/Input";
 
 export default function Register() {
   const navigate = useNavigate();
   const { logo } = useCompany();
   const { handleLoginOrRegistration } = useAuth();
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     surname: "",
     email: "",
     password: "",
   });
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isRepeatPasswordVisible, setIsRepeatPasswordVisible] = useState(false);
+  const [passwordMatching, setPasswordMatching] = useState({ password: "" });
+  function validateForm() {
+    let isValid = true;
+    const newErrors = {};
 
-  function togglePasswordVisibility() {
-    setIsPasswordVisible((prevState) => !prevState);
-  }
-  function toggleRepeatPasswordVisibility() {
-    setIsRepeatPasswordVisible((prevState) => !prevState);
+    // Validate name
+    if (!formData.name) {
+      newErrors.name = "Name is required";
+      isValid = false;
+    } else if (formData.name.length < 3) {
+      newErrors.name = "Name must be 3 characters long or higher";
+      isValid = false;
+    }
+    // Validate surname
+    if (!formData.surname) {
+      newErrors.surname = "Surname is required";
+      isValid = false;
+    } else if (formData.surname.length < 3) {
+      newErrors.surname = "Surname must be 3 characters long or higher";
+      isValid = false;
+    }
+    // Validate email
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const isValidEmail = emailRegex.test(formData.email);
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!isValidEmail) {
+      newErrors.email = "Email is not valid";
+      isValid = false;
+    }
+    // Validate password
+    // Has minimum 8 characters in length. Adjust it by modifying {8,}
+    // At least one uppercase English letter. You can remove this condition by removing (?=.*?[A-Z])
+    // At least one lowercase English letter.  You can remove this condition by removing (?=.*?[a-z])
+    // At least one digit. You can remove this condition by removing (?=.*?[0-9])
+    // At least one special character,  You can remove this condition by removing (?=.*?[#?!@$%^&*-])
+    const passwordRegex =
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+    const isValidPassword = passwordRegex.test(formData.password);
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (!isValidPassword) {
+      newErrors.password =
+        "Password must be minimum 8 characters, have at least one uppercase and lowercase letter, one number and a special character";
+      isValid = false;
+    }
+    ("");
+    // Validate repeat password
+    console.log(formData.password, "pswd", passwordMatching.password, "repeat");
+    if (formData.password !== passwordMatching.password) {
+      newErrors.passwordMatching = "Password doesn't match";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   }
   async function onRegistrationSubmit(e) {
     e.preventDefault();
-
-    // chiamata api che invia i dati di login al server e ne riceve la risposta.
-    const resp = await fetchApi("/register", "POST", {
-      ...formData,
-      name: formData.name,
-    });
-
-    // salvo i dati nel AuthContext
-    handleLoginOrRegistration(resp);
-    console.log(formData + "info");
-    navigate("/dashboard");
+    if (validateForm()) {
+      // Form is valid, you can submit or process the data here
+      console.log("Form data:", formData);
+      // chiamata api che invia i dati di login al server e ne riceve la risposta.
+      const resp = await fetchApi("/register", "POST", {
+        ...formData,
+        name: formData.name,
+      });
+      console.log(resp, "resp");
+      setSubmitted(true); // Set a submitted flag
+      // salvo i dati nel AuthContext
+      handleLoginOrRegistration(resp);
+      navigate("/dashboard");
+    } else {
+      // Form is not valid, display error messages
+      Error("Errore nell'invio dei dati");
+    }
   }
-
+  const isFormValid = Object.keys(errors).length === 0;
   return (
     <>
       <div className="container mx-auto px-4">
-        {/* Form di registrazione con pulsante per tornare alla pagina di login */}
         <div className="flex justify-center items-center h-screen">
           <div className="w-full max-w-md">
+            {/* Form di registrazione con pulsante per tornare alla pagina di login */}
             <form
               className="bg-white shadow-lg rounded px-12 pt-6 pb-8 mb-4"
               onSubmit={onRegistrationSubmit}
@@ -57,188 +116,92 @@ export default function Register() {
                   alt="Just Post It logo"
                 />
               </div>
-              {/* Nome */}
-              <div className="grid items-end gap-6 py-4">
-                <div className="relative">
-                  <input
-                    className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    id="name"
-                    type="text"
-                    placeholder=" "
-                    value={formData.name}
-                    onChange={(e) => handleInputChange(e, "name", setFormData)}
-                  />
-                  <label
-                    className="absolute text-md text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-3.5 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                    htmlFor="name"
-                  >
-                    Nome
-                  </label>
-                </div>
-              </div>
 
-              {/* Cognome */}
-              <div className="grid items-end gap-6 py-4">
-                <div className="relative">
-                  <input
-                    className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    id="surname"
-                    type="text"
-                    placeholder=" "
-                    value={formData.surname}
-                    onChange={(e) =>
-                      handleInputChange(e, "surname", setFormData)
-                    }
-                  />
-                  <label
-                    className="absolute text-md text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-3.5 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                    htmlFor="surname"
-                  >
-                    Cognome
-                  </label>
+              {/* Nome Input */}
+              <FormInput
+                label={"Nome"}
+                type={"text"}
+                id={"name"}
+                placeholder={""}
+                value={formData.name}
+                onChangeEffect={(e) =>
+                  handleInputChange(e, "name", setFormData)
+                }
+              ></FormInput>
+              {errors.name && (
+                <div className="error p-1 text-white bg-red-600 rounded">
+                  {errors.name}
                 </div>
-              </div>
-              {/* Email */}
-              <div className="grid items-end gap-6 py-4">
-                <div className="relative">
-                  <input
-                    className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    id="email"
-                    type="email"
-                    placeholder=" "
-                    value={formData.email}
-                    onChange={(e) => handleInputChange(e, "email", setFormData)}
-                  />
-                  <label
-                    htmlFor="email"
-                    className="absolute text-md text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-3.5 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                  >
-                    Email
-                  </label>
+              )}
+              {/* Cognome Input*/}
+
+              <FormInput
+                label={"Cognome"}
+                type={"text"}
+                id={"surname"}
+                placeholder={""}
+                value={formData.surname}
+                onChangeEffect={(e) =>
+                  handleInputChange(e, "surname", setFormData)
+                }
+              ></FormInput>
+              {errors.surname && (
+                <div className="error p-1 text-white bg-red-600 rounded">
+                  {errors.surname}
                 </div>
-              </div>
-              {/* Password */}
-              <div className="grid items-end gap-6 py-4">
-                <div className="relative">
-                  <input
-                    className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    id="password"
-                    type={isPasswordVisible ? "text" : "password"}
-                    placeholder=" "
-                    value={formData.password}
-                    onChange={(e) =>
-                      handleInputChange(e, "password", setFormData)
-                    }
-                  />
-                  <button
-                    className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {isPasswordVisible ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                  <label
-                    htmlFor="password"
-                    className="absolute text-md text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-3.5 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                  >
-                    Password
-                  </label>
+              )}
+              {/* Email Input */}
+
+              <FormInput
+                label={"Email"}
+                type={"email"}
+                id={"email"}
+                placeholder={""}
+                value={formData.email}
+                onChangeEffect={(e) =>
+                  handleInputChange(e, "email", setFormData)
+                }
+              ></FormInput>
+              {errors.email && (
+                <div className="error p-1 text-white bg-red-600 rounded">
+                  {errors.email}
                 </div>
-              </div>
-              {/* Ripeti Password */}
-              <div className="grid items-end gap-6 py-4">
-                <div className="relative">
-                  <input
-                    type={isRepeatPasswordVisible ? "text" : "password"}
-                    id="repeat_password"
-                    className="block px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 shadow appearance-none border rounded   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    placeholder=" "
-                  />
-                  <button
-                    className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600"
-                    onClick={toggleRepeatPasswordVisibility}
-                  >
-                    {isRepeatPasswordVisible ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                  <label
-                    htmlFor="repeat_password"
-                    className="absolute text-md text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-3.5 z-10 origin-[0] start-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                  >
-                    Ripeti Password
-                  </label>
+              )}
+              {/* Password Input */}
+              <FormInput
+                label={"Password"}
+                type={"password"}
+                id={"password"}
+                placeholder={""}
+                value={formData.password}
+                onChangeEffect={(e) =>
+                  handleInputChange(e, "password", setFormData)
+                }
+              ></FormInput>
+              {errors.password && (
+                <div className="error p-1 text-white bg-red-600 rounded">
+                  {errors.password}
                 </div>
-              </div>
+              )}
+
+              {/* Ripeti Password Input */}
+              <FormInput
+                label={"Ripeti password"}
+                type={"password"}
+                id={"repeat_password"}
+                placeholder={""}
+                value={passwordMatching}
+                onChangeEffect={(e) =>
+                  handleInputChange(e, "password", setPasswordMatching)
+                }
+              ></FormInput>
+              {errors.passwordMatching && (
+                <div className="error p-1 text-white bg-red-600 rounded">
+                  {errors.passwordMatching}
+                </div>
+              )}
               {/* Pulsanti */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-2">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
                 focus:outline-none focus:shadow-outline"

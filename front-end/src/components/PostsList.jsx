@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import fetchApi from "../utils/fetchApi";
 
 export default function Post({ data }) {
   const [formData, setFormData] = useState({ published: null });
@@ -24,27 +25,20 @@ export default function Post({ data }) {
     });
     console.log(formData, "formdata");
 
+    // new method
     const formDataToSend = new FormData();
     console.log(formDataToSend, "tosend");
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
-    });
+    formDataToSend.append("published", formData["published"]);
 
-    const elToken = localStorage.getItem("token");
+    // old method I used
+    // const formDataToSend = new FormData();
+    // console.log(formDataToSend, "tosend");
+    // Object.keys(formData).forEach((key) => {
+    //   formDataToSend.append(key, formData[key]);
+    // });
 
-    const response = await fetch(
-      "http://localhost:3307/photos/published/" + id,
-      {
-        method: "put",
-        headers: {
-          Authorization: "Bearer " + elToken,
-        },
-        body: formDataToSend,
-      }
-    );
-    if (!response.ok) {
-      alert("Errore durante l'invio dei dati: " + (await response.text()));
-    }
+    // const elToken = localStorage.getItem("token");
+    await fetchApi("/photos/published/" + id, "PUT", formDataToSend);
   }
 
   function getImgUrl() {

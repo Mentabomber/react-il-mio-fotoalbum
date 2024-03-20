@@ -34,7 +34,6 @@ export default function Login() {
         {/* form di login */}
         <div className="flex justify-center items-center h-screen">
           <div className="w-full max-w-md">
-            {error && <div className="p-6 text-white bg-red-600">{error}</div>}
             <form
               className="bg-white shadow-lg rounded px-12 pt-6 pb-8 mb-4"
               onSubmit={onLoginSubmit}
@@ -55,6 +54,9 @@ export default function Login() {
                   value={formData.email}
                   onChange={(e) => handleInputChange(e, "email", setFormData)}
                 />
+                {error && (
+                  <div className="p-1 text-white bg-red-600">{error}</div>
+                )}
               </div>
 
               {/* Password */}
