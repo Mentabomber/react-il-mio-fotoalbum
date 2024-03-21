@@ -54,31 +54,36 @@ async function store(req, res, next) {
 
 async function show(req, res) {
   const showInputData = req.params;
-  const showPhoto = await prisma.photo.findUnique({
-    where: {
-      id: parseInt(showInputData.id),
-    },
-    include: {
-      categories: {
-        select: {
-          type: true,
-          description: true,
+  try {
+    const showPhoto = await prisma.photo.findUnique({
+      where: {
+        id: parseInt(showInputData.id),
+      },
+      include: {
+        categories: {
+          select: {
+            id: true,
+            type: true,
+            description: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            name: true,
+            surname: true,
+          },
         },
       },
-      user: {
-        select: {
-          email: true,
-          name: true,
-          surname: true,
-        },
-      },
-    },
-  });
-  if (!showPhoto) {
-    throw new Error("Not found");
+    });
+    return res.json(showPhoto);
+  } catch (error) {
+    console.log(error);
   }
 
-  return res.json(showPhoto);
+  // if (!showPhoto) {
+  //   throw new Error("Not found");
+  // }
 }
 
 async function index(req, res) {
@@ -126,6 +131,7 @@ async function index(req, res) {
       include: {
         categories: {
           select: {
+            id: true,
             type: true,
             description: true,
           },

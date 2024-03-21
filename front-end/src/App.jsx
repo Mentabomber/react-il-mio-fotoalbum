@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import CreatePhoto from "./pages/CreateNewPhoto";
+import UpdatePhoto from "./pages/UpdatePhoto";
 import ShowOwnPhoto from "./pages/ShowOwnPhoto";
 import PrivateRoutes from "./middlewares/PrivateRoutes";
 import RoleAccess from "./middlewares/RoleAccess";
@@ -89,7 +90,18 @@ function App() {
               <Route index element={<CreatePhoto />}></Route>
               <Route path="user" element={<CreatePhoto />}></Route>
             </Route>
-
+            <Route
+              path="update-post/:id"
+              element={
+                <PrivateRoutes>
+                  <DefaultLayout />
+                </PrivateRoutes>
+              }
+              errorElement={<GenericError></GenericError>}
+            >
+              <Route index element={<UpdatePhoto />}></Route>
+              <Route path="user" element={<UpdatePhoto />}></Route>
+            </Route>
             <Route
               path="super-admin-tab"
               element={

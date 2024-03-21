@@ -3,7 +3,6 @@ import TheNavbar from "../components/TheNavbar";
 import { CompanyProvider } from "../contexts/CompanyContext";
 
 export default function NotFound() {
-
   return (
     <CompanyProvider>
       <TheNavbar></TheNavbar>
@@ -19,5 +18,6 @@ export default function NotFound() {
       </main>
 
       <TheFooter></TheFooter>
-    </CompanyProvider>);
-};
+    </CompanyProvider>
+  );
+}

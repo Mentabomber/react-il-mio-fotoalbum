@@ -1,25 +1,21 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ShowOwnPhotos() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   let initiated = false;
   const [photosList, setPhotosList] = useState([]);
-
   async function fetchData() {
+    console.log(user, "user");
     const url = `http://localhost:3307/photos?userId=${user.id}`;
     const jsonData = await (await fetch(url)).json();
 
     setPhotosList(jsonData.data);
   }
-  async function handleEditClick(id) {
-    const photoData = await (
-      await fetch("http://localhost:3307/photos/" + id)
-    ).json();
-
-    // apriamo l'overlay
-    onEditPhoto(photoData);
+  function handleEditClick(id) {
+    navigate("http://localhost:3307/update-photo/" + id);
   }
 
   // All'avvio dell'applicazione, fetchiamo i dati
@@ -31,7 +27,7 @@ export default function ShowOwnPhotos() {
     fetchData();
 
     initiated = true;
-  }, []);
+  }, [user]);
 
   return (
     <>
@@ -44,6 +40,7 @@ export default function ShowOwnPhotos() {
               key={photo.id}
               photo={photo}
               reverse={index % 2 !== 0}
+              handleEditClick={handleEditClick}
             ></PhotoSection>
           ))}
         </div>
@@ -52,7 +49,7 @@ export default function ShowOwnPhotos() {
   );
 }
 
-function PhotoSection({ photo, reverse }) {
+function PhotoSection({ photo, reverse, handleEditClick }) {
   function getImgUrl() {
     if (!photo.image) {
       return "/no-image.jpg";

@@ -121,7 +121,7 @@ export default function Register() {
       Error("Errore nell'invio dei dati");
     }
   }
-  const isFormValid = Object.keys(errors).length === 0;
+  // const isFormValid = Object.keys(errors).length === 0;
   return (
     <>
       <div className="container mx-auto px-4">

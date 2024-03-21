@@ -1,7 +1,12 @@
 async function fetchApi(path, method = "GET", body = null) {
   try {
-    if (method === "PUT" && path !== "/login") {
+    if (
+      (method === "PUT" && path !== "/login") ||
+      (method === "POST" && path === "/photos/")
+    ) {
       {
+        console.log("ciaone");
+        console.log(body);
         const resp = await fetch(import.meta.env.VITE_API_URL + path, {
           method: method,
           headers: {
@@ -9,7 +14,7 @@ async function fetchApi(path, method = "GET", body = null) {
               ? `Bearer ${localStorage.getItem("token")}`
               : null,
           },
-          body: body, //body ? JSON.stringify(body) : null,
+          body: body,
         });
         if (!resp.ok) {
           alert("Errore durante l'invio dei dati: " + (await resp.text()));

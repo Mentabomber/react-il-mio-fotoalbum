@@ -1,8 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import fetchApi from "../utils/fetchApi";
-
 const initialFormData = {
   title: "",
   description: "",
@@ -10,9 +9,13 @@ const initialFormData = {
   image: "",
   categories: [],
 };
-export default function CreateNewPhoto() {
+export default function UpdatePhoto() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  let initiated = false;
+  const { id } = useParams();
+  console.log(id);
+  // Ottengo uno state con i query string presenti
 
   const inputClasses =
     "w-full border-2 border-gray-300 rounded-lg px-4 py-2 transition-colors focus:outline-none focus:border-primary";
@@ -21,7 +24,22 @@ export default function CreateNewPhoto() {
   const [error, setError] = useState("");
   const [validationErrors, setValidationErrors] = useState("");
   const [created, setCreated] = useState(false);
+  const [photo, setPhoto] = useState({});
 
+  async function fetchData() {
+    try {
+      const url = "http://localhost:3307/photos/";
+      const jsonData = await (await fetch(url + id)).json();
+      console.log(jsonData, "jsonData");
+      if (jsonData === null) {
+        navigate("not-found");
+      } else {
+        setFormData({ ...jsonData });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   function handleInputChange(e, key) {
     const value = e.target.value;
     const checked = e.target.checked;
@@ -115,12 +133,20 @@ export default function CreateNewPhoto() {
 
   useEffect(() => {
     fetchCategories();
+    if (initiated) {
+      return;
+    }
+
+    fetchData();
+
+    initiated = true;
   }, []);
 
   function getImagePreview() {
+    console.log("entrato");
     return typeof formData.image !== "string"
       ? URL.createObjectURL(formData.image)
-      : formData.image;
+      : "http://localhost:3307/" + formData.image;
   }
 
   return (
@@ -178,6 +204,7 @@ export default function CreateNewPhoto() {
               onChange={(e) => handleInputChange(e, "published")}
               id="published_input"
               className={inputClasses}
+              checked={formData.published}
             />
           </div>
           <div className="mb-4">
@@ -216,6 +243,13 @@ export default function CreateNewPhoto() {
                       value={category.id}
                       onChange={(e) => handleInputChange(e, "categories")}
                       id="categories_input"
+                      checked={
+                        formData.categories.find(
+                          (cat) => cat.id === category.id
+                        )
+                          ? true
+                          : false
+                      }
                     />
 
                     <span className="ml-1">{category.type}</span>

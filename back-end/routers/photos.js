@@ -7,6 +7,7 @@ const photosController = require("../controllers/photos");
 const authHandlerMiddleware = require("../middlewares/authHandler");
 const userIdHandlerMiddleware = require("../middlewares/userIdHandler");
 const authRoleHandlerMiddleware = require("../middlewares/authRoleHandler");
+const notFound = require("../middlewares/routeNotFound");
 //validators
 const { checkSchema } = require("express-validator");
 const { checkValidity } = require("../middlewares/schemaValidator");

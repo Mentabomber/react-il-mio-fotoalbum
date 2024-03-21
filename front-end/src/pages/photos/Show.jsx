@@ -19,10 +19,18 @@ export default function Show() {
   console.log(searchParams);
 
   async function fetchData() {
-    const url = "http://localhost:3307/photos/";
-    const jsonData = await (await fetch(url + id)).json();
-    console.log(jsonData, "ciaone");
-    setPhoto(jsonData);
+    try {
+      const url = "http://localhost:3307/photos/";
+      const jsonData = await (await fetch(url + id)).json();
+      console.log(jsonData, "jsonData");
+      if (jsonData === null) {
+        navigation("not-found");
+      } else {
+        setPhoto(jsonData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
   function getImgUrl() {
     if (!photo.image) {
