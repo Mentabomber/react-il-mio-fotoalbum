@@ -30,20 +30,32 @@ export default function UpdatePhoto() {
     try {
       const url = "http://localhost:3307/photos/";
       const jsonData = await (await fetch(url + id)).json();
-      console.log(jsonData, "jsonData");
+      console.log(jsonData.categories[0].id, "formData");
       if (jsonData === null) {
         navigate("not-found");
       } else {
-        setFormData({ ...jsonData });
+        const extractedCategories = jsonData.categories.map(
+          (category) => category.id
+        );
+
+        setFormData({
+          // ...jsonData,
+          title: jsonData.title,
+          description: jsonData.description,
+          published: jsonData.published,
+          image: jsonData.image,
+          categories: [extractedCategories],
+        });
+        console.log(formData, "formData");
       }
     } catch (error) {
       console.log(error);
     }
   }
-  function handleInputChange(e, key) {
-    const value = e.target.value;
+  async function handleInputChange(e, key) {
+    const value = parseInt(e.target.value);
     const checked = e.target.checked;
-
+    console.log(formData.categories, "bimbum");
     let newValue = e.target.type === "checkbox" ? checked : value;
 
     if (e.target.type === "file") {
@@ -56,9 +68,9 @@ export default function UpdatePhoto() {
       let currentCategories = formData.categories;
 
       if (checked) {
-        currentCategories.push(value);
+        currentCategories[0].push(value);
       } else {
-        currentCategories = currentCategories.filter(
+        currentCategories = currentCategories[0].filter(
           (category) => category !== value
         );
       }
@@ -95,10 +107,10 @@ export default function UpdatePhoto() {
       isValid = false;
     }
     // Image Validation
-    if (!formData.image) {
-      newValidationErrors.image = "Image is required";
-      isValid = false;
-    }
+    // if (!formData.image) {
+    //   newValidationErrors.image = "Image is required";
+    //   isValid = false;
+    // }
 
     // Category Validation
     if (formData.categories.length === 0) {
@@ -111,6 +123,7 @@ export default function UpdatePhoto() {
   }
   async function handleFormSubmit(e) {
     e.preventDefault();
+
     if (validateForm()) {
       // Form is valid, you can submit or process the data here
       console.log("Form data:", formData);
@@ -120,7 +133,7 @@ export default function UpdatePhoto() {
         formDataToSend.append(key, formData[key]);
       });
       console.log(formDataToSend, "mandare");
-      await fetchApi("/photos/", "POST", formDataToSend);
+      await fetchApi("/photos/" + formData.id, "PUT", formDataToSend);
 
       setCreated(true); // Set a submitted flag
 
@@ -244,9 +257,7 @@ export default function UpdatePhoto() {
                       onChange={(e) => handleInputChange(e, "categories")}
                       id="categories_input"
                       checked={
-                        formData.categories.find(
-                          (cat) => cat.id === category.id
-                        )
+                        formData.categories[0].includes(parseInt(category.id))
                           ? true
                           : false
                       }
@@ -272,7 +283,7 @@ export default function UpdatePhoto() {
             type="submit"
             onClick={handleFormSubmit}
           >
-            Aggiungi
+            Modifica
           </button>
           <button
             className="w-full bg-gray-200 hover:bg-gray-400 px-8 py-4 rounded-lg text-gray-800 transition-colors"

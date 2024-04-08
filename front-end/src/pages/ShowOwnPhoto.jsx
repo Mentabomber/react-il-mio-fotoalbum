@@ -15,7 +15,7 @@ export default function ShowOwnPhotos() {
     setPhotosList(jsonData.data);
   }
   function handleEditClick(id) {
-    navigate("http://localhost:3307/update-photo/" + id);
+    navigate("/update-post/" + id);
   }
 
   // All'avvio dell'applicazione, fetchiamo i dati

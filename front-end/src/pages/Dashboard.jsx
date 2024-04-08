@@ -32,6 +32,13 @@ export default function Dashboard() {
             <span className="text-black">Vedi tutti i tuoi Post</span>
           </DashboardLink>
         </li>
+        {user.role === "superadmin" ? (
+          <li>
+            <DashboardLink href="/super-admin-tab">
+              <span className="text-black">SUPER ADMIN TAB</span>
+            </DashboardLink>
+          </li>
+        ) : null}
       </ul>
     </>
   );

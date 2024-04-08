@@ -35,9 +35,14 @@ module.exports = {
   image: {
     custom: {
       options: (value, { req }) => {
+        console.log(req.method, "req");
         // Verifica se è stato fornito un file
         if (!req.file) {
-          throw new Error("L'immagine è obbligatoria");
+          if (req.method === "PUT") {
+            return true;
+          } else {
+            throw new Error("L'immagine è obbligatoria");
+          }
         }
 
         // Verifica il tipo di file (puoi personalizzare i tipi supportati)

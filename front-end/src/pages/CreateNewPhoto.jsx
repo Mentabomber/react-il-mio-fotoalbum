@@ -102,11 +102,11 @@ export default function CreateNewPhoto() {
         formDataToSend.append(key, formData[key]);
       });
       console.log(formDataToSend, "mandare");
-      await fetchApi("/photos/", "POST", formDataToSend);
+      const data = await fetchApi("/photos/", "POST", formDataToSend);
 
       setCreated(true); // Set a submitted flag
 
-      navigate("/photos/" + formDataToSend.id);
+      navigate("/photos/" + data.id);
     } else {
       // Form is not valid, display error messages
       Error("Errore nell'invio dei dati");

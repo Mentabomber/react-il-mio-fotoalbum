@@ -6,6 +6,7 @@ const fs = require("fs");
 async function store(req, res, next) {
   const validation = validationResult(req);
   const image = req.file; // Dati sull'immagine caricata
+  console.log(req, "req");
 
   // isEmpty si riferisce all'array degli errori di validazione.
   // Se NON è vuoto, vuol dire che ci sono errori
@@ -154,12 +155,27 @@ async function index(req, res) {
 }
 
 async function update(req, res) {
-  const file = req.file;
+  const validation = validationResult(req);
+  let image = req.file; // Dati sull'immagine caricata
+  console.log(req, "req");
+  // isEmpty si riferisce all'array degli errori di validazione.
+  // Se NON è vuoto, vuol dire che ci sono errori
+  if (!validation.isEmpty()) {
+    return next(
+      new ValidationError("Controllare i dati inseriti", validation.array())
+    );
+  }
+  // console.log(req.body.image, "req");
+  if (!image) {
+    image = req.body.image;
+  }
+  console.log(image, "image");
   const id = req.params.id;
+  console.log(req.validatedData, "req");
   const datiInIngresso = req.validatedData;
   try {
-    if (file) {
-      datiInIngresso.image = file.filename;
+    if (image) {
+      datiInIngresso.image = image.filename;
     }
     const photo = await prisma.photo.findUnique({
       where: {
@@ -175,7 +191,7 @@ async function update(req, res) {
       },
       data: {
         title: datiInIngresso.title,
-        image: file.path,
+        image: image.path,
         description: datiInIngresso.description,
         published: Boolean(datiInIngresso.published),
         categories: {
