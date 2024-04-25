@@ -73,6 +73,7 @@ export default function Login() {
                   id="password"
                   type="password"
                   value={formData.password}
+                  placeholder="Password"
                   onChange={(e) =>
                     handleInputChange(e, "password", setFormData)
                   }

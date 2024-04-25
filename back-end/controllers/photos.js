@@ -15,8 +15,13 @@ async function store(req, res, next) {
       new ValidationError("Controllare i dati inseriti", validation.array())
     );
   }
-  const datiInIngresso = req.validatedData;
-  console.log(datiInIngresso);
+  let datiInIngresso = req.validatedData;
+  console.log(datiInIngresso, "dati ingresso");
+  if (datiInIngresso.published === "true") {
+    datiInIngresso.published = true;
+  } else {
+    datiInIngresso.published = false;
+  }
   const user = req.user;
   const query = {
     title: datiInIngresso.title,
@@ -156,8 +161,6 @@ async function index(req, res) {
 
 async function update(req, res) {
   const validation = validationResult(req);
-  let image = req.file; // Dati sull'immagine caricata
-  console.log(req, "req");
   // isEmpty si riferisce all'array degli errori di validazione.
   // Se NON è vuoto, vuol dire che ci sono errori
   if (!validation.isEmpty()) {
@@ -165,18 +168,71 @@ async function update(req, res) {
       new ValidationError("Controllare i dati inseriti", validation.array())
     );
   }
-  // console.log(req.body.image, "req");
-  if (!image) {
-    image = req.body.image;
-  }
-  console.log(image, "image");
   const id = req.params.id;
-  console.log(req.validatedData, "req");
-  const datiInIngresso = req.validatedData;
-  try {
-    if (image) {
+
+  let datiInIngresso = req.validatedData;
+  console.log(datiInIngresso, "dati ingresso");
+  if (datiInIngresso.published === "true") {
+    datiInIngresso.published = true;
+  } else {
+    datiInIngresso.published = false;
+  }
+  if (req.file) {
+    let image = req.file;
+    console.log(image, "image");
+    try {
+      const categoriesList = await prisma.category.findMany();
+
       datiInIngresso.image = image.filename;
+      const photo = await prisma.photo.findUnique({
+        where: {
+          id: parseInt(id),
+        },
+      });
+
+      if (!photo) {
+        throw new Error("Not found");
+      }
+      // Get the IDs of categories to disconnect
+
+      const categoryIdsToDisconnect = categoriesList
+        .filter((cat) => !datiInIngresso.categories.includes(cat.id.toString()))
+        .map((cat) => ({ id: cat.id }));
+
+      const updatePhoto = await prisma.photo.update({
+        where: {
+          id: parseInt(id),
+        },
+        data: {
+          title: datiInIngresso.title,
+          image: image.path.replace(/^storage\\/, ""),
+          description: datiInIngresso.description,
+          published: datiInIngresso.published,
+          categories: {
+            connect: datiInIngresso.categories.split(",").map((idCategory) => ({
+              id: parseInt(idCategory),
+            })),
+            disconnect: categoryIdsToDisconnect, // Disconnect categories not found in datiInIngresso.categories
+          },
+        },
+        include: {
+          categories: true,
+          user: true,
+        },
+      });
+
+      if (photo.image) {
+        fs.unlinkSync("storage/" + photo.image);
+        console.log("Immagine precedente eliminata:", photo.image);
+      }
+      return res.json(updatePhoto);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: error });
     }
+  } else {
+    const categoriesList = await prisma.category.findMany();
+
     const photo = await prisma.photo.findUnique({
       where: {
         id: parseInt(id),
@@ -185,36 +241,39 @@ async function update(req, res) {
     if (!photo) {
       throw new Error("Not found");
     }
+    // Get the IDs of categories to disconnect
+    const categoryIdsToDisconnect = categoriesList
+      .filter((cat) => !datiInIngresso.categories.includes(cat.id.toString()))
+      .map((cat) => ({ id: cat.id }));
+
     const updatePhoto = await prisma.photo.update({
       where: {
         id: parseInt(id),
       },
       data: {
         title: datiInIngresso.title,
-        image: image.path,
         description: datiInIngresso.description,
-        published: Boolean(datiInIngresso.published),
+        published: datiInIngresso.published,
         categories: {
-          connect: datiInIngresso.categories.map((idCategory) => ({
+          connect: datiInIngresso.categories.split(",").map((idCategory) => ({
             id: parseInt(idCategory),
           })),
+          disconnect: categoryIdsToDisconnect, // Disconnect categories not found in datiInIngresso.categories
         },
       },
+      include: {
+        categories: true,
+        user: true,
+      },
     });
-    if (photo.image) {
-      fs.unlinkSync(photo.image);
-      console.log("Immagine precedente eliminata:", photo.image);
-    }
     return res.json(updatePhoto);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error });
   }
 }
 async function updatePublishedState(req, res) {
   const id = req.params.id;
 
   try {
+    const categoriesList = await prisma.category.findMany();
     let datiInIngresso = req.body.published;
     console.log(datiInIngresso);
     if (datiInIngresso === "true") {
@@ -231,6 +290,7 @@ async function updatePublishedState(req, res) {
     if (!photo) {
       throw new Error("Not found");
     }
+    console.log(photo, "photo");
     const updatePhotoPublished = await prisma.photo.update({
       where: {
         id: parseInt(id),
@@ -259,7 +319,7 @@ async function destroy(req, res) {
       },
     });
     if (deletePhoto.image) {
-      fs.unlinkSync(deletePhoto.image);
+      fs.unlinkSync("storage/" + deletePhoto.image);
       console.log("Immagine eliminata:", deletePhoto.image);
     }
     return res.json(deletePhoto);

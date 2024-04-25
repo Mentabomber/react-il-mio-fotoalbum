@@ -15,6 +15,7 @@ module.exports = async (req, res, next) => {
   const token = bearer.split(" ")[1];
   const user = jsonwebtoken.verify(token, process.env.JWT_SECRET);
   const showInputData = req.params;
+
   const showPhoto = await prisma.photo.findUnique({
     where: {
       id: parseInt(showInputData.id),

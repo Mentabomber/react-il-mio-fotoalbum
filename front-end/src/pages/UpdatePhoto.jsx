@@ -30,21 +30,22 @@ export default function UpdatePhoto() {
     try {
       const url = "http://localhost:3307/photos/";
       const jsonData = await (await fetch(url + id)).json();
-      console.log(jsonData.categories[0].id, "formData");
+
       if (jsonData === null) {
         navigate("not-found");
       } else {
         const extractedCategories = jsonData.categories.map(
           (category) => category.id
         );
-
+        console.log(extractedCategories);
+        console.log("entro");
         setFormData({
           // ...jsonData,
           title: jsonData.title,
           description: jsonData.description,
           published: jsonData.published,
           image: jsonData.image,
-          categories: [extractedCategories],
+          categories: extractedCategories,
         });
         console.log(formData, "formData");
       }
@@ -53,7 +54,7 @@ export default function UpdatePhoto() {
     }
   }
   async function handleInputChange(e, key) {
-    const value = parseInt(e.target.value);
+    const value = e.target.value;
     const checked = e.target.checked;
     console.log(formData.categories, "bimbum");
     let newValue = e.target.type === "checkbox" ? checked : value;
@@ -65,18 +66,31 @@ export default function UpdatePhoto() {
     // controllo se sto assegnando il valore alla proprietà categories
     // se si, devo gestire il valore come se fosse un array
     if (key === "categories") {
-      let currentCategories = formData.categories;
+      let updatedCategories = formData.categories;
 
       if (checked) {
-        currentCategories[0].push(value);
+        updatedCategories.push(parseInt(value));
       } else {
-        currentCategories = currentCategories[0].filter(
-          (category) => category !== value
+        updatedCategories = formData.categories.filter(
+          (category) => category !== parseInt(value)
         );
       }
 
-      newValue = currentCategories;
+      newValue = updatedCategories;
     }
+    // if (key === "categories") {
+    //   let currentCategories = formData.categories;
+
+    //   if (checked) {
+    //     currentCategories[0].push(value);
+    //   } else {
+    //     currentCategories = currentCategories[0].filter(
+    //       (category) => category !== value
+    //     );
+    //   }
+
+    //   newValue = currentCategories;
+    // }
     console.log(newValue, "prima di essere mandata");
     setFormData((prev) => {
       return {
@@ -133,11 +147,11 @@ export default function UpdatePhoto() {
         formDataToSend.append(key, formData[key]);
       });
       console.log(formDataToSend, "mandare");
-      await fetchApi("/photos/" + formData.id, "PUT", formDataToSend);
-
+      await fetchApi("/photos/" + id, "PUT", formDataToSend);
+      console.log(formDataToSend, "data");
       setCreated(true); // Set a submitted flag
 
-      navigate("/photos/" + formDataToSend.id);
+      navigate("/photos/" + id);
     } else {
       // Form is not valid, display error messages
       Error("Errore nell'invio dei dati");
@@ -245,10 +259,11 @@ export default function UpdatePhoto() {
             )}
           </div>
           <div className="mb-4">
-            <label>Tags</label>
+            <label>Tags:</label>
 
             <div className="flex gap-3 flex-wrap">
               {categoriesList.map((category) => {
+                const isChecked = formData.categories.includes(category.id);
                 return (
                   <label key={category.id}>
                     <input
@@ -256,11 +271,7 @@ export default function UpdatePhoto() {
                       value={category.id}
                       onChange={(e) => handleInputChange(e, "categories")}
                       id="categories_input"
-                      checked={
-                        formData.categories[0].includes(parseInt(category.id))
-                          ? true
-                          : false
-                      }
+                      checked={isChecked}
                     />
 
                     <span className="ml-1">{category.type}</span>

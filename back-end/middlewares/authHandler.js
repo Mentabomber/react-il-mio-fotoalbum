@@ -19,14 +19,10 @@ module.exports = (req, res, next) => {
   // estraggo il token
   const token = bearer.split(" ")[1];
 
-  // verificare che il token sia valido.
-  // Il verify da solo lancia degli errori in caso di token non valido o scaduto
-  // estrarre i dati dell'utente dal token. Il verify ritorna il payload del token, quindi l'utente
-  const user = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+  const user = jsonwebtoken.verify(token, process.env.JWT_ACCESS_SECRET);
 
   // passare i dati dell'utente alla req in modo che possiamo accedervi nei controller
   req["user"] = user;
 
-  // invocare next()
   next();
 };

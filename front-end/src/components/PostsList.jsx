@@ -52,7 +52,7 @@ export default function Post({ data }) {
   }
 
   return (
-    <div className={"w-full h-5 py-10 border-b flex"}>
+    <div className={"w-full h-5 py-10 border-b flex justify-between"}>
       <div className="aspect-square w-1/6 ">
         <img
           src={getImgUrl()}
@@ -60,17 +60,22 @@ export default function Post({ data }) {
           className="w-10 h-10 object-cover hover:cursor-pointer hover:scale-[5.0]"
         />
       </div>
-      <div>user {data.user.email}</div>
-      <div className={"flex gap-6 w-5/6 justify-between"}>
-        <h2 className="text-4xl font-semibold mb-4 w-2/6">{data.title}</h2>
+
+      <div className={"flex gap-6 w-3/6 justify-between"}>
+        {/* e-mail */}
+        <p className="text-md font-semibold mb-4 w-1/4">
+          user: {data.user.email}
+        </p>
+        {/* title */}
+        <h2 className="text-md font-semibold mb-4 w-1/4">{data.title}</h2>
 
         {/* descrizione */}
-        <p className="text-xl text-gray-500">
+        <p className="text-md text-gray-500 h-10 w-1/4 overflow-y-auto">
           {data.description ?? "Descrizione non disponibile"}
         </p>
 
         {/* categories */}
-        <p className="text-gray-500 text-sm ">
+        <p className="text-gray-500 text-sm w-1/4">
           {data.categories.length
             ? data.categories.map((category) => (
                 <span key={category.id} className="px-2">
@@ -79,28 +84,29 @@ export default function Post({ data }) {
               ))
             : "Categorie non disponibili"}
         </p>
+      </div>
+      <div className="flex gap-4 w-2/6 justify-between">
+        <Link
+          to={"/photos/" + data.id}
+          className=" bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center"
+        >
+          Visualizza
+        </Link>
 
-        <div className="flex gap-4 align-end">
-          <Link
-            to={"/photos/" + data.id}
-            className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center"
-          >
-            Visualizza
-          </Link>
-          <div className="mb-4">
-            <label htmlFor="available_input">Pubblica</label>
-            <input
-              name="published"
-              type="checkbox"
-              checked={formData.published}
-              onChange={(e) => handleValueChange(data.id, e)}
-              id="published_input"
-            />
-          </div>
-
-          <button className="w-full bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center">
-            Modifica
-          </button>
+        <button className=" bg-blue-500 hover:bg-blue-800 px-8 py-4 rounded-lg text-white transition-colors flex items-center">
+          Modifica
+        </button>
+        <div className="mb-4">
+          <label className="p-2" htmlFor="available_input">
+            Pubblica
+          </label>
+          <input
+            name="published"
+            type="checkbox"
+            checked={formData.published}
+            onChange={(e) => handleValueChange(data.id, e)}
+            id="published_input"
+          />
         </div>
       </div>
     </div>

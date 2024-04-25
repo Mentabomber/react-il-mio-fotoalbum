@@ -36,8 +36,6 @@ export function PhotosList() {
     <>
       <section className="py-8">
         <div className="container px-4 mx-auto">
-          <h1 className="text-6xl text-center mb-8">Benvenuti!</h1>
-
           {photosList
             .filter((photo) => photo.published === true) // Filtra solo le foto con published true
             .map((photo, index) => (

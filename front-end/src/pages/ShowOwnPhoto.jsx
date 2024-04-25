@@ -33,8 +33,6 @@ export default function ShowOwnPhotos() {
     <>
       <section className="py-8">
         <div className="container px-4 mx-auto">
-          <h1 className="text-6xl text-center mb-8">Benvenuti!</h1>
-
           {photosList.map((photo, index) => (
             <PhotoSection
               key={photo.id}

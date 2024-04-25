@@ -16,30 +16,36 @@ export default function Dashboard() {
   const { user } = useAuth();
   return (
     <>
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl">
+      <div className="container mx-auto w-4/6">
+        <h1 className="text-4xl py-10">
           Benvenuto {user?.name} {user?.surname}
         </h1>
-      </div>
-      <ul>
-        <li>
-          <DashboardLink href="/new-post">
-            <span className="text-black">Crea un nuovo Post</span>
-          </DashboardLink>
-        </li>
-        <li>
-          <DashboardLink href="/show-posts">
-            <span className="text-black">Vedi tutti i tuoi Post</span>
-          </DashboardLink>
-        </li>
-        {user.role === "superadmin" ? (
-          <li>
-            <DashboardLink href="/super-admin-tab">
-              <span className="text-black">SUPER ADMIN TAB</span>
+        <ul>
+          <li className="py-5 ">
+            <DashboardLink href="/new-post">
+              <span className="bg-white hover:bg-gray-100 text-gray-800 font-semibold text-2xl py-2 px-4 border border-gray-400 rounded shadow">
+                Crea un nuovo Post
+              </span>
             </DashboardLink>
           </li>
-        ) : null}
-      </ul>
+          <li className="py-5 ">
+            <DashboardLink href="/show-posts">
+              <span className="bg-white hover:bg-gray-100 text-gray-800 font-semibold text-2xl py-2 px-4 border border-gray-400 rounded shadow">
+                Vedi tutti i tuoi Post
+              </span>
+            </DashboardLink>
+          </li>
+          {user.role === "superadmin" ? (
+            <li className="py-5 ">
+              <DashboardLink href="/super-admin-tab">
+                <span className="bg-white hover:bg-gray-100 text-gray-800 font-semibold text-2xl py-2 px-4 border border-gray-400 rounded shadow">
+                  Super admin tab
+                </span>
+              </DashboardLink>
+            </li>
+          ) : null}
+        </ul>
+      </div>
     </>
   );
 }
